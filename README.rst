@@ -2,6 +2,12 @@
 django-conditional-aggregates
 =============================
 
+|Build Status|
+
+.. |Build Status| image:: https://travis-ci.org/anentropic/django-conditional-aggregates.svg?branch=master
+    :alt: Build Status
+    :target: https://travis-ci.org/anentropic/django-conditional-aggregates
+
 Sometimes you need some conditional logic to decide which related rows to 'aggregate' in your aggregation function.
 
 In SQL you can do this with a ``CASE`` clause, for example:
