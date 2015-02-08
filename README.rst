@@ -2,11 +2,16 @@
 django-conditional-aggregates
 =============================
 
-|Build Status|
+|Build Status| |PyPi Version|
 
 .. |Build Status| image:: https://travis-ci.org/anentropic/django-conditional-aggregates.svg?branch=master
     :alt: Build Status
     :target: https://travis-ci.org/anentropic/django-conditional-aggregates
+.. |PyPi Version| image:: https://pypip.in/version/django-conditional-aggregates/badge.svg
+    :alt: Latest PyPI version
+    :target: https://pypip.in/version/django-conditional-aggregates/badge.svg
+
+(Note: currently tested and working on Django 1.6 only)
 
 Sometimes you need some conditional logic to decide which related rows to 'aggregate' in your aggregation function.
 
