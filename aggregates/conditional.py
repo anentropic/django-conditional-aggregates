@@ -1,5 +1,9 @@
+import django
 from django.db.models import Aggregate, Q
 from django.db.models.sql.aggregates import Aggregate as SQLAggregate
+
+
+DJANGO_MAJOR, DJANGO_MINOR, _, _, _ = django.VERSION
 
 
 def transform_q(q, query):
@@ -40,6 +44,16 @@ def render_q(q, qn, connection):
     joinstr = u' {} '.format(q.connector)
     conditions = []
     params = []
+
+    if DJANGO_MAJOR == 1 and DJANGO_MINOR == 7:
+        # in Django 1.7 WhereNode.as_sql expects `qn` to have a `compile`
+        # method (i.e not really expecting a quote names function any more
+        # they are expecting a django.db.models.sql.compiler.SQLCompiler)
+        try:
+            qn = qn.__self__
+        except AttributeError:
+            pass
+
     for child in q.children:
         if isinstance(child, Q):
             # recurse
@@ -52,13 +66,6 @@ def render_q(q, qn, connection):
                 child, joins_used = child
             except TypeError:
                 # Django 1.6
-                pass
-            # in Django 1.7 WhereNode.as_sql expects `qn` to have a `compile`
-            # method (i.e not really expecting a quote names function any more
-            # they are expecting a django.db.models.sql.compiler.SQLCompiler)
-            try:
-                qn = qn.__self__
-            except AttributeError:
                 pass
             # we expect child to be a WhereNode (see transform_q)
             condition, child_params = child.as_sql(qn, connection)
