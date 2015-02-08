@@ -47,7 +47,20 @@ def render_q(q, qn, connection):
             conditions.append(u'({})'.format(condition))
             params.extend(child_params)
         else:
-            # we expect to be a WhereNode (see transform_q)
+            try:
+                # Django 1.7
+                child, joins_used = child
+            except TypeError:
+                # Django 1.6
+                pass
+            # in Django 1.7 WhereNode.as_sql expects `qn` to have a `compile`
+            # method (i.e not really expecting a quote names function any more
+            # they are expecting a django.db.models.sql.compiler.SQLCompiler)
+            try:
+                qn = qn.__self__
+            except AttributeError:
+                pass
+            # we expect child to be a WhereNode (see transform_q)
             condition, child_params = child.as_sql(qn, connection)
             params.extend(child_params)
             conditions.append(condition)

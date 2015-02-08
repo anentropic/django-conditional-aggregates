@@ -11,7 +11,7 @@ django-conditional-aggregates
     :alt: Latest PyPI version
     :target: https://pypip.in/version/django-conditional-aggregates/badge.svg
 
-(Note: currently tested and working on Django 1.6 only)
+*currently tested against Django 1.6 and Django 1.7 only*
 
 Sometimes you need some conditional logic to decide which related rows to 'aggregate' in your aggregation function.
 

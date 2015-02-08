@@ -1,3 +1,4 @@
+import re
 from unittest import TestCase
 
 from django.db.models import Q
@@ -24,6 +25,12 @@ def flatten_q_children(q, all_children):
         if isinstance(child, Q):
             flatten_q_children(child, all_children)
         else:
+            try:
+                # Django 1.7
+                child, joins_used = child
+            except TypeError:
+                # Django 1.6
+                pass
             all_children.append(child)
 
 
@@ -35,6 +42,13 @@ def quote_char(connection):
     and return one of them)
     """
     return connection.ops.quote_name('')[0]
+
+
+WHITESPACE = re.compile(r'\s+|\n*', re.MULTILINE)
+
+
+def normalize_whitespace(src):
+    return WHITESPACE.sub(' ', src)
 
 
 class AggregatesTest(TestCase):
@@ -87,7 +101,10 @@ class AggregatesTest(TestCase):
             '))'
         ).format(quote_char(compiler.connection))
 
-        self.assertEqual(rendered, expected)
+        self.assertEqual(
+            normalize_whitespace(rendered),
+            normalize_whitespace(expected)
+        )
 
     def test_conditional_sum_as_sql(self):
         qs = Stat.objects.values('campaign_id').annotate(
@@ -115,7 +132,10 @@ class AggregatesTest(TestCase):
             expected += u' ORDER BY NULL'
         expected = expected.format(quote_char(compiler.connection))
 
-        self.assertEqual(rendered, expected)
+        self.assertEqual(
+            normalize_whitespace(rendered),
+            normalize_whitespace(expected)
+        )
 
     def test_conditional_count_as_sql(self):
         qs = Stat.objects.values('campaign_id').annotate(
@@ -142,7 +162,10 @@ class AggregatesTest(TestCase):
             expected += u' ORDER BY NULL'
         expected = expected.format(quote_char(compiler.connection))
 
-        self.assertEqual(rendered, expected)
+        self.assertEqual(
+            normalize_whitespace(rendered),
+            normalize_whitespace(expected)
+        )
 
     def test_reuse_aggregate(self):
         when = Q(stat_type='a', event_type='v')
