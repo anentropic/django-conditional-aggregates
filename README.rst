@@ -9,7 +9,7 @@ django-conditional-aggregates
     :target: https://travis-ci.org/anentropic/django-conditional-aggregates
 .. |PyPi Version| image:: https://pypip.in/version/django-conditional-aggregates/badge.svg
     :alt: Latest PyPI version
-    :target: https://pypip.in/version/django-conditional-aggregates/badge.svg
+    :target: https://pypi.python.org/pypi/django-conditional-aggregates
 
 *currently tested against Django 1.6 and Django 1.7 only*
 
