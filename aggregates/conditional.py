@@ -5,6 +5,10 @@ from django.db.models.sql.aggregates import Aggregate as SQLAggregate
 
 DJANGO_MAJOR, DJANGO_MINOR, _, _, _ = django.VERSION
 
+if DJANGO_MAJOR == 1 and DJANGO_MINOR < 6:
+    from copy import deepcopy
+    from .legacy import build_filter
+
 
 def transform_q(q, query):
     """
@@ -22,7 +26,11 @@ def transform_q(q, query):
             transform_q(child, query)
         else:
             # child is (lookup, value) tuple
-            where_node = query.build_filter(child)
+            try:
+                where_node = query.build_filter(child)
+            except AttributeError:
+                # Django < 1.6
+                where_node = build_filter(query, child)
             q.children[i] = where_node
 
 
@@ -127,7 +135,10 @@ class SQLConditionalAggregate(SQLAggregate):
         }
         substitutions.update(self.extra)
 
-        return self.sql_template % substitutions, params
+        if DJANGO_MAJOR == 1 and DJANGO_MINOR < 6:
+            return (self.sql_template % substitutions) % tuple(params)
+        else:
+            return self.sql_template % substitutions, params
 
 
 class ConditionalAggregate(Aggregate):
@@ -146,7 +157,11 @@ class ConditionalAggregate(Aggregate):
 
     def add_to_query(self, query, alias, col, source, is_summary):
         # transform simple lookups to WhereNodes:
-        when = self.when.clone()
+        try:
+            when = self.when.clone()
+        except AttributeError:
+            # Django < 1.6
+            when = deepcopy(self.when)
         transform_q(when, query)
 
         aggregate = self.SQLClass(

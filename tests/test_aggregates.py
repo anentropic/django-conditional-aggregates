@@ -168,6 +168,10 @@ class AggregatesTest(TestCase):
         )
 
     def test_reuse_aggregate(self):
+        """
+        ensure we are cloning the ``when`` object internally, as it gets
+        mutated during processing
+        """
         when = Q(stat_type='a', event_type='v')
         Stat.objects.values('campaign_id').annotate(
             impressions=ConditionalSum('count', when=when)

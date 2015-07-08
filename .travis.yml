@@ -5,6 +5,8 @@ env:
   global:
     - PYTHONPATH=tests:.:$PYTHONPATH
   matrix:
+    - DJANGO_VERSION=1.4 DJANGO_SETTINGS_MODULE=dj14_testproject.settings PYTHONPATH=tests/dj14_testproject:$PYTHONPATH
+    - DJANGO_VERSION=1.5 DJANGO_SETTINGS_MODULE=dj15_testproject.settings PYTHONPATH=tests/dj15_testproject:$PYTHONPATH
     - DJANGO_VERSION=1.6 DJANGO_SETTINGS_MODULE=dj16_testproject.settings PYTHONPATH=tests/dj16_testproject:$PYTHONPATH
     - DJANGO_VERSION=1.7 DJANGO_SETTINGS_MODULE=dj17_testproject.settings PYTHONPATH=tests/dj17_testproject:$PYTHONPATH
 install:
