@@ -4,6 +4,8 @@ django-conditional-aggregates
 
 |Build Status| |PyPi Version|
 
+|Python2.7|
+
 |Django1.4| |Django1.5| |Django1.6| |Django1.7|
 
 .. |Build Status| image:: https://travis-ci.org/anentropic/django-conditional-aggregates.svg?branch=master
@@ -12,14 +14,16 @@ django-conditional-aggregates
 .. |PyPi Version| image:: https://badge.fury.io/py/django-conditional-aggregates.svg
     :alt: Latest PyPI version
     :target: https://pypi.python.org/pypi/django-conditional-aggregates/
+.. |Python2.7| image:: https://img.shields.io/badge/Python%202.7--brightgreen.svg
+    :alt: Python 2.7
 .. |Django1.4| image:: https://img.shields.io/badge/Django%201.4--brightgreen.svg
-    :alt: Latest PyPI version
+    :alt: Django 1.4
 .. |Django1.5| image:: https://img.shields.io/badge/Django%201.5--brightgreen.svg
-    :alt: Latest PyPI version
+    :alt: Django 1.5
 .. |Django1.6| image:: https://img.shields.io/badge/Django%201.6--brightgreen.svg
-    :alt: Latest PyPI version
+    :alt: Django 1.6
 .. |Django1.7| image:: https://img.shields.io/badge/Django%201.7--brightgreen.svg
-    :alt: Latest PyPI version
+    :alt: Django 1.7
 
 
 *(Django 1.4 and 1.5 needed an ugly hack but our tests pass, if you find any edge cases please post an issue)*
