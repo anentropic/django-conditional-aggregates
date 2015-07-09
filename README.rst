@@ -6,7 +6,7 @@ django-conditional-aggregates
 
 |Python2.7|
 
-|Django1.4| |Django1.5| |Django1.6| |Django1.7|
+|Django1.6| |Django1.7|
 
 .. |Build Status| image:: https://travis-ci.org/anentropic/django-conditional-aggregates.svg?branch=master
     :alt: Build Status
@@ -16,17 +16,13 @@ django-conditional-aggregates
     :target: https://pypi.python.org/pypi/django-conditional-aggregates/
 .. |Python2.7| image:: https://img.shields.io/badge/Python%202.7--brightgreen.svg
     :alt: Python 2.7
-.. |Django1.4| image:: https://img.shields.io/badge/Django%201.4--brightgreen.svg
-    :alt: Django 1.4
-.. |Django1.5| image:: https://img.shields.io/badge/Django%201.5--brightgreen.svg
-    :alt: Django 1.5
 .. |Django1.6| image:: https://img.shields.io/badge/Django%201.6--brightgreen.svg
     :alt: Django 1.6
 .. |Django1.7| image:: https://img.shields.io/badge/Django%201.7--brightgreen.svg
     :alt: Django 1.7
 
 
-*(Django 1.4 and 1.5 needed an ugly hack but our tests pass, if you find any edge cases please post an issue)*
+*(Django 1.4 and 1.5 are not possible due to limitation of older `SQLCompiler` class)*
 
 Note: from Django 1.8 on this module is not needed as support is built-in:  
 https://docs.djangoproject.com/en/1.8/ref/models/conditional-expressions/#case

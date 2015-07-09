@@ -83,6 +83,10 @@ class AggregatesTest(TestCase):
 
         sql, params = render_q(q, compiler.quote_name_unless_alias,
                                compiler.connection)
+        self.assertEqual(
+            tuple(params),
+            ('f', 'g', 'u', 'shu/p', 'i', 'e')
+        )
         rendered = sql % tuple(params)
 
         expected = unicode(
@@ -112,6 +116,10 @@ class AggregatesTest(TestCase):
         compiler = qs.query.get_compiler('default')
 
         sql, params = compiler.as_sql()
+        self.assertEqual(
+            tuple(params),
+            ('a', 'v')
+        )
         rendered = sql % params
 
         expected = unicode(
@@ -119,6 +127,41 @@ class AggregatesTest(TestCase):
             ' SUM(CASE WHEN'
             ' ({0}testapp_stat{0}.{0}stat_type{0} = a'
             '  AND {0}testapp_stat{0}.{0}event_type{0} = v'
+            ' ) THEN {0}testapp_stat{0}.{0}count{0} ELSE 0 END'
+            ') AS {0}impressions{0}'
+            ' FROM {0}testapp_stat{0}'
+            ' GROUP BY {0}testapp_stat{0}.{0}campaign_id{0}'
+        )
+        if 'mysql' in compiler.connection.__class__.__module__:
+            expected += u' ORDER BY NULL'
+        expected = expected.format(quote_char(compiler.connection))
+
+        self.assertEqual(
+            normalize_whitespace(rendered),
+            normalize_whitespace(expected)
+        )
+
+    def test_conditional_sum_in_clause_as_sql(self):
+        qs = Stat.objects.values('campaign_id').annotate(
+            impressions=ConditionalSum(
+                'count',
+                when=Q(stat_type='a', event_type__in=('v', 'b'))
+            )
+        )
+        compiler = qs.query.get_compiler('default')
+
+        sql, params = compiler.as_sql()
+        self.assertEqual(
+            tuple(params),
+            ('a', 'v', 'b')
+        )
+        rendered = sql % params
+
+        expected = unicode(
+            'SELECT {0}testapp_stat{0}.{0}campaign_id{0},'
+            ' SUM(CASE WHEN'
+            ' ({0}testapp_stat{0}.{0}stat_type{0} = a'
+            '  AND {0}testapp_stat{0}.{0}event_type{0} IN (v, b)'
             ' ) THEN {0}testapp_stat{0}.{0}count{0} ELSE 0 END'
             ') AS {0}impressions{0}'
             ' FROM {0}testapp_stat{0}'
@@ -143,6 +186,10 @@ class AggregatesTest(TestCase):
         compiler = qs.query.get_compiler('default')
 
         sql, params = compiler.as_sql()
+        self.assertEqual(
+            tuple(params),
+            ('a', 'v')
+        )
         rendered = sql % params
 
         expected = unicode(
@@ -181,6 +228,10 @@ class AggregatesTest(TestCase):
         compiler = qs.query.get_compiler('default')
 
         sql, params = compiler.as_sql()
+        self.assertEqual(
+            tuple(params),
+            ('a', 'v', 'Big Corp')
+        )
         rendered = sql % params
 
         expected = unicode(
@@ -214,6 +265,10 @@ class AggregatesTest(TestCase):
         compiler = qs.query.get_compiler('default')
 
         sql, params = compiler.as_sql()
+        self.assertEqual(
+            tuple(params),
+            ('a', 'v')
+        )
         rendered = sql % params
 
         expected = unicode(
