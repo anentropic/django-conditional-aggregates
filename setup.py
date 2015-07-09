@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name='django-conditional-aggregates',
-    version='0.3.0',
+    version='0.3.2',
     packages=['aggregates'],
     license='MIT',
     long_description=open('README.rst').read(),
