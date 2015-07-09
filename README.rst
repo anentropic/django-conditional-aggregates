@@ -59,7 +59,7 @@ Usage:
 .. code:: python
 
     from django.db.models import Q
-    from aggregates.conditional import ConditionalSum
+    from djconnagg import ConditionalSum
 
     # recreate the SQL example from above in pure Django ORM:
     report = (
@@ -79,7 +79,7 @@ Note that standard Django ``Q`` objects are used to formulate the ``CASE WHEN(..
 
 .. code:: python
 
-    from aggregates.conditional import ConditionalAggregate, SQLConditionalAggregate
+    from djconnagg.aggregates import ConditionalAggregate, SQLConditionalAggregate
 
     class ConditionalSum(ConditionalAggregate):
         name = 'ConditionalSum'

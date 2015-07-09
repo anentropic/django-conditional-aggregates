@@ -4,12 +4,8 @@ from unittest import TestCase
 from django.db.models import Q
 from django.db.models.sql.where import WhereNode
 
-from aggregates.conditional import (
-    ConditionalCount,
-    ConditionalSum,
-    render_q,
-    transform_q,
-)
+from djconnagg import ConditionalCount, ConditionalSum
+from djconnagg.aggregates import render_q, transform_q
 
 from testapp.models import Stat
 
