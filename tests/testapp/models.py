@@ -1,6 +1,10 @@
 from django.db import models
 
 
+class Customer(models.Model):
+    name = models.CharField(max_length=16)
+
+
 class Stat(models.Model):
     """
     Just imagine you need some kind of advertising stats...
@@ -10,6 +14,7 @@ class Stat(models.Model):
         ('a', 'Aggregate'),
         ('u', 'Unique'),
     )
+    customer = models.ForeignKey(Customer)
     stat_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     event_type = models.CharField(max_length=2, db_index=True)
     detail = models.CharField(max_length=100, db_index=True)
@@ -18,7 +23,9 @@ class Stat(models.Model):
 
     def __unicode__(self):
         return (
-            "Stat: stat_type={stat_type},"
+            "Stat:"
+            " customer={customer_id},"
+            " stat_type={stat_type},"
             " event_type={event_type},"
             " detail={detail},"
             " campaign_id={campaign_id},"

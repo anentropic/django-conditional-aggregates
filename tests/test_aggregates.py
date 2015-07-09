@@ -7,7 +7,7 @@ from django.db.models.sql.where import WhereNode
 from djconnagg import ConditionalCount, ConditionalSum
 from djconnagg.aggregates import render_q, transform_q
 
-from testapp.models import Stat
+from testapp.models import Customer, Stat
 
 
 def flatten_q_children(q, all_children):
@@ -122,6 +122,78 @@ class AggregatesTest(TestCase):
             ' ) THEN {0}testapp_stat{0}.{0}count{0} ELSE 0 END'
             ') AS {0}impressions{0}'
             ' FROM {0}testapp_stat{0}'
+            ' GROUP BY {0}testapp_stat{0}.{0}campaign_id{0}'
+        )
+        if 'mysql' in compiler.connection.__class__.__module__:
+            expected += u' ORDER BY NULL'
+        expected = expected.format(quote_char(compiler.connection))
+
+        self.assertEqual(
+            normalize_whitespace(rendered),
+            normalize_whitespace(expected)
+        )
+
+    def test_conditional_sum_across_relation_as_sql(self):
+        qs = Customer.objects.values('stat__campaign_id').annotate(
+            impressions=ConditionalSum(
+                'stat__count',
+                when=Q(stat__stat_type='a', stat__event_type='v')
+            )
+        )
+        compiler = qs.query.get_compiler('default')
+
+        sql, params = compiler.as_sql()
+        rendered = sql % params
+
+        expected = unicode(
+            'SELECT {0}testapp_stat{0}.{0}campaign_id{0},'
+            ' SUM(CASE WHEN'
+            ' ({0}testapp_stat{0}.{0}stat_type{0} = a'
+            '  AND {0}testapp_stat{0}.{0}event_type{0} = v'
+            ' ) THEN {0}testapp_stat{0}.{0}count{0} ELSE 0 END'
+            ') AS {0}impressions{0}'
+            ' FROM {0}testapp_customer{0}'
+            '  LEFT OUTER JOIN {0}testapp_stat{0}'
+            '  ON ({0}testapp_customer{0}.{0}id{0} = {0}testapp_stat{0}.{0}customer_id{0})'
+            ' GROUP BY {0}testapp_stat{0}.{0}campaign_id{0}'
+        )
+        if 'mysql' in compiler.connection.__class__.__module__:
+            expected += u' ORDER BY NULL'
+        expected = expected.format(quote_char(compiler.connection))
+
+        self.assertEqual(
+            normalize_whitespace(rendered),
+            normalize_whitespace(expected)
+        )
+
+    def test_conditional_sum_across_relation_local_filter_as_sql(self):
+        qs = (
+            Customer.objects
+            .filter(name='Big Corp')
+            .values('stat__campaign_id')
+            .annotate(
+                impressions=ConditionalSum(
+                    'stat__count',
+                    when=Q(stat__stat_type='a', stat__event_type='v')
+                )
+            )
+        )
+        compiler = qs.query.get_compiler('default')
+
+        sql, params = compiler.as_sql()
+        rendered = sql % params
+
+        expected = unicode(
+            'SELECT {0}testapp_stat{0}.{0}campaign_id{0},'
+            ' SUM(CASE WHEN'
+            ' ({0}testapp_stat{0}.{0}stat_type{0} = a'
+            '  AND {0}testapp_stat{0}.{0}event_type{0} = v'
+            ' ) THEN {0}testapp_stat{0}.{0}count{0} ELSE 0 END'
+            ') AS {0}impressions{0}'
+            ' FROM {0}testapp_customer{0}'
+            '  LEFT OUTER JOIN {0}testapp_stat{0}'
+            '  ON ({0}testapp_customer{0}.{0}id{0} = {0}testapp_stat{0}.{0}customer_id{0})'
+            ' WHERE {0}testapp_customer{0}.{0}name{0} = Big Corp'
             ' GROUP BY {0}testapp_stat{0}.{0}campaign_id{0}'
         )
         if 'mysql' in compiler.connection.__class__.__module__:
